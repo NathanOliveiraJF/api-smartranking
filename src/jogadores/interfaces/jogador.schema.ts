@@ -1,6 +1,6 @@
 import * as moogose from 'mongoose';
 
-// this is equivalent to a table 
+// this is equivalent to a table, is a collection in the mongodb
 export const JogadorSchema = new moogose.Schema({
   telefoneCelular: { type: String, unique: true },
   email: { type: String, unique: true },
