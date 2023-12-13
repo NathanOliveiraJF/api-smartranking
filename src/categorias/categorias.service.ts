@@ -21,7 +21,7 @@ export class CategoriasService {
     }
 
     async consultarTodasCategorias(): Promise<Array<Categoria>> {
-        return await this.categoriaModel.find().exec();
+        return await this.categoriaModel.find().populate("jogadores").exec();
     }
 
     async consultarCategoriasPorId(_id: string): Promise<Categoria> {
@@ -39,4 +39,16 @@ export class CategoriasService {
       }
       await this.categoriaModel.findOneAndUpdate({categoriaId}, {$set: atualizarCategoriaDto}).exec();
     }
+    
+    async atribuirCategoriaJogador(params: string[]): Promise<void> {
+      const idcategoria = params['_id'];
+      const idjogador   = params['jogadorId'];
+      const categoriaEncontrada = await this.categoriaModel.findById(idcategoria).exec();
+      if (!categoriaEncontrada) {
+        throw new BadRequestException('Categoria não encontrada!');
+      }
+      categoriaEncontrada.jogadores.push(idjogador);
+      await this.categoriaModel.findOneAndUpdate({idcategoria}, {$set: categoriaEncontrada}).exec();
+    }
+
 }

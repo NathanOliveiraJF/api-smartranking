@@ -24,8 +24,14 @@ export class CategoriasController {
         return await this.categoriaService.consultarCategoriasPorId(_id);
     }
     
-    @Put('/:idCategoria')
-    async atualizarCategoria(@Body() atualizarCategoriaDto: AtualizarCategoriaDto, @Param('categoriaId') categoriaId: string): Promise<void> {
-      await this.categoriaService.atualizarCategoria(categoriaId, atualizarCategoriaDto);
+    @Put('/:_id')
+    @UsePipes(ValidationPipe)
+    async atualizarCategoria(@Body() atualizarCategoriaDto: AtualizarCategoriaDto, @Param('_id') _id: string): Promise<void> {
+      await this.categoriaService.atualizarCategoria(_id, atualizarCategoriaDto);
+    }
+
+    @Post('/:_id/jogadores/:jogadorId')
+    async atribuirCategoriaJogador(@Param() params: string[]): Promise<void> {
+      return await this.categoriaService.atribuirCategoriaJogador(params);
     }
 }
