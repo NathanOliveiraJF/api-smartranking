@@ -4,10 +4,11 @@ import { Model } from 'mongoose';
 import { Categoria } from './interfaces/categoria.interface';
 import { CriarCategoriaDto } from './dto/criar-categoria.dto';
 import { AtualizarCategoriaDto } from './dto/atualizar-categoria.dto';
+import { JogadoresService } from 'src/jogadores/jogadores.service';
 
 @Injectable()
 export class CategoriasService {
-    constructor(@InjectModel('Categoria') private readonly categoriaModel: Model<Categoria>){}
+    constructor(@InjectModel('Categoria') private readonly categoriaModel: Model<Categoria>, private readonly jogadoresService: JogadoresService){}
 
     async criarCategoria(criarCategoriaDto: CriarCategoriaDto): Promise<Categoria> {
         const { categoria } = criarCategoriaDto;
@@ -44,8 +45,13 @@ export class CategoriasService {
       const idcategoria = params['_id'];
       const idjogador   = params['jogadorId'];
       const categoriaEncontrada = await this.categoriaModel.findById(idcategoria).exec();
+      const jogadorJaCadastradoCategoria = await this.categoriaModel.find({idcategoria}).where('jogadores').in(idjogador).exec();
+      await this.jogadoresService.consultarJogadoresPorId(idjogador);
       if (!categoriaEncontrada) {
         throw new BadRequestException('Categoria não encontrada!');
+      }
+      if (jogadorJaCadastradoCategoria.length > 0) {
+        throw new BadRequestException('jogador ja cadastrado na categoria');
       }
       categoriaEncontrada.jogadores.push(idjogador);
       await this.categoriaModel.findOneAndUpdate({idcategoria}, {$set: categoriaEncontrada}).exec();
