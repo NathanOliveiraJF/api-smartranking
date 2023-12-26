@@ -6,6 +6,7 @@ export const PartidaSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Jogador"
     }],
+    def: { type: mongoose.Schema.ObjectId, ref: "Jogador" },
     resultado: [
         { set: { type: String } }
     ]
